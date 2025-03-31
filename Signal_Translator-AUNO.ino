@@ -10,7 +10,7 @@ AF_DCMotor motor3(3);
 
 // Variabelen voor timing
 unsigned long previousMillis = 0;
-unsigned long interval = 1; // 1 ms interval voor motor3 PWM controle
+unsigned long interval = 10; 
 bool motor3On = false;
 char currentCommand = '0';
 
@@ -21,7 +21,7 @@ void setup() {
 
   motor1.setSpeed(200); 
   motor1.run(RELEASE); 
-  motor3.setSpeed(255); 
+  motor3.setSpeed(200); 
   motor3.run(RELEASE);
 }
 
