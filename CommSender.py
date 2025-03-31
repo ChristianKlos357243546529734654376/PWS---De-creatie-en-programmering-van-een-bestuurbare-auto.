@@ -2,15 +2,31 @@ import pygame
 import serial
 import time
 
-# voeg een hashtag toe op line 8, 9, 13, en 82 als de computer NIET is verbonden aan een arduino
 
-# Stelt Serial Communicatie op met Arduino, COM5 is de poort op je laptop waar de kabel zit, kan verschillen met apparaat
-arduino = serial.Serial('COM5', 9600)
-time.sleep(2)
+# Stelt Serial Communicatie op met Arduino, COM is de poort op je laptop waar de kabel zit, kan verschillen met apparaat
+# we proberen verschillende COM poorten tot een werkende gevonden wordt
+arduino = None
+comlijst = ['COM1', 'COM2', 'COM3', 'COM4', 'COM5']
+
+for comport in comlijst:
+    try:
+        arduino = serial.Serial(comport, 9600, timeout=1)
+        print(f"Verbonden met Arduino op {comport}")
+        time.sleep(2)
+        break
+    except:
+        print(f"Kon {comport} niet openen.")
+
+if arduino is None:
+    print("Geen Arduino gevonden.")
+    verbonden = 0
+else:
+    verbonden = 1
 
 # Deze code stuurt de commando door en stuurt een update bericht in de Shell
 def sendCommand(command):
-    arduino.write(command.encode())
+    if verbonden == 1:
+        arduino.write(command.encode())
     print(f"Sent command: {command}")
 
 # Initialiseert Pygame
@@ -32,11 +48,11 @@ while running:
     if keys[pygame.K_w] and keys[pygame.K_d]:
         command = '1'
 # Command 1 is motor vooruit en stuur naar rechts
-        
+       
     elif keys[pygame.K_w] and keys[pygame.K_a]:
         command = '2'
 # Command 2 is motor vooruit en stuur naar links
-        
+       
     elif keys[pygame.K_w]:
         command = '3'
 # Command 3 is motor vooruit
@@ -56,7 +72,7 @@ while running:
     elif keys[pygame.K_d]:
         command = '7'
 # Command 7 is stuur naar rechts
-        
+       
     elif keys[pygame.K_a]:
         command = '8'
 # Command 8 is stuur naar links
@@ -79,4 +95,5 @@ while running:
     pygame.time.delay(100)
 
 pygame.quit()
-arduino.close()
+if verbonden == 1:
+    arduino.close()
